@@ -10,11 +10,14 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [filteredCarparks, setFilteredCarparks] = useState<any[]>([]);
+  const [showWelcome, setShowWelcome] = useState(true); // State to control welcome notification visibility
 
+  // Navigates to a specific carpark detail page based on ID
   const handleMarkerPress = (id: string) => {
     router.push(`/carpark/${id}`);
   };
 
+  // Opens the favourites screen if user has any stored favourites
   const handleFavouritesPress = async () => {
     const favourites = await AsyncStorage.getItem('favourites');
     if (favourites) {
@@ -22,23 +25,23 @@ export default function HomeScreen() {
     }
   };
 
+  // Filters the carpark list based on the search input
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-
-  
     const filtered = mockCarparks.filter(carpark =>
       carpark.name.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredCarparks(filtered);
   };
 
+  // When a user selects a suggestion from the list
   const handleSuggestionPress = (id: string) => {
-  
     router.push(`/carpark/${id}`);
     setSearchQuery('');
     setFilteredCarparks([]);
   };
 
+  // Detect keyboard show/hide events to adjust component layout accordingly
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
       setKeyboardVisible(true);
@@ -56,7 +59,7 @@ export default function HomeScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.fullContainer}>
-        {/* MAP */}
+        {/* Map View showing all carpark markers */}
         <View style={styles.mapContainer}>
           <MapView
             style={StyleSheet.absoluteFillObject}
@@ -82,11 +85,8 @@ export default function HomeScreen() {
           </MapView>
         </View>
 
-        {/* Search + Add Button */}
-        <View style={[
-          styles.controlsContainer,
-          { top: keyboardVisible ? 50 : undefined, bottom: keyboardVisible ? undefined : 20 }
-        ]}>
+        {/* Search bar and Add Carpark button */}
+        <View style={[styles.controlsContainer, { top: keyboardVisible ? 50 : undefined, bottom: keyboardVisible ? undefined : 50 }]}>
           <TextInput
             style={styles.searchInput}
             placeholder="Search for locations"
@@ -102,38 +102,58 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Suggestions List */}
+        {/* Suggestions dropdown from search input */}
         {filteredCarparks.length > 0 && (
-          <FlatList
-            data={filteredCarparks}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity 
-                style={styles.suggestionItem} 
-                onPress={() => handleSuggestionPress(item.id)}
-              >
-                <Text style={styles.suggestionText}>{item.name}</Text>
-              </TouchableOpacity>
-            )}
-            style={[styles.suggestionList, { top: 120, bottom: 70 }]}  
-          />
+          <View style={styles.suggestionWrapper}>
+            <FlatList
+              data={filteredCarparks}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity 
+                  style={styles.suggestionItem} 
+                  onPress={() => handleSuggestionPress(item.id)}
+                >
+                  <Text style={styles.suggestionText}>{item.name}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
         )}
 
-        {/* Favourites Button */}
+        {/* Favourites quick-access button */}
         <TouchableOpacity
-          style={[
-            styles.favouritesButton,
-            { bottom: keyboardVisible ? 150 : 120 } 
-          ]}
+          style={[styles.favouritesButton, { bottom: keyboardVisible ? 150 : 120 }]}
           onPress={handleFavouritesPress}
         >
           <Text style={styles.favouritesButtonText}>❤️ Favourites</Text>
         </TouchableOpacity>
+
+        {/* Welcome screen that appears on app launch */}
+        {showWelcome && (
+          <View style={styles.welcomeOverlay}>
+            <View style={styles.welcomeBox}>
+              <Text style={styles.welcomeTitle}>Welcome to CarParkFinder!</Text>
+              <Text style={styles.welcomeMessage}>
+                🅿️ Find available car parks near your location.
+                {"\n\n"}❤️ Save your favourites for quick access.
+                {"\n\n"}📍 Tap on any marker to view more details.
+                {"\n\n"}➕ Add your own car parks to the map!
+              </Text>
+              <TouchableOpacity 
+                style={styles.findButton} 
+                onPress={() => setShowWelcome(false)}
+              >
+                <Text style={styles.findButtonText}>Find Car Parks</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );
 }
 
+// StyleSheet used across the UI components
 const styles = StyleSheet.create({
   fullContainer: {
     flex: 1,
@@ -196,7 +216,69 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  suggestionList: {
+  suggestionWrapper: {
     position: 'absolute',
+    top: 110,
+    left: 20,
+    right: 20,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    paddingVertical: 4,
+    zIndex: 10,
+    maxHeight: 150,
+    elevation: 6,
+  },
+  suggestionItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  suggestionText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  welcomeOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  welcomeBox: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    width: '80%',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  welcomeTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  welcomeMessage: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 20,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  findButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  findButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

@@ -1,50 +1,62 @@
-# Welcome to your Expo app 👋
+CarParkFinder
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+CarParkFinder is a React Native mobile app built with Expo that helps users locate, view, and manage car parks near them. Users can search for car parks, view detailed information via map markers, add new locations, and save favourites.
 
-## Get started
+Features
 
-1. Install dependencies
+📍 Interactive Map using react-native-maps
 
-   ```bash
-   npm install
-   ```
+🔍 Real-time Search with Auto-Suggestions
 
-2. Start the app
+📑 Favourites functionality via AsyncStorage
 
-   ```bash
-    npx expo start
-   ```
+📌 Tap markers for car park details
 
-In the output, you'll find options to open the app in a
+➕ Add new car parks manually
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+👋 Welcome modal introducing app features
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Tech Stack
 
-## Get a fresh project
+React Native
 
-When you're ready, run:
+Expo Router
 
-```bash
-npm run reset-project
-```
+TypeScript
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+AsyncStorage (for storing favourites)
 
-## Learn more
+React Native Maps
 
-To learn more about developing your project with Expo, look at the following resources:
+Getting Started
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Clone the repo:
 
-## Join the community
+git clone https://github.com/YOUR_USERNAME/CarParkFinder.git
+cd CarParkFinder
 
-Join our community of developers creating universal apps.
+Install dependencies:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+npm install
+
+Start the development server:
+
+npx expo start
+
+Open the app in Expo Go on your mobile device, or use an emulator.
+
+Folder Structure
+
+app/ - All screens including the home screen (index.tsx), add-carpark, favourites, and dynamic carpark routes.
+
+constants/carpark.ts - Contains mock carpark data.
+
+firebaseConfig.ts - (if used) Firebase integration.
+
+Customisation
+
+Modify mock car parks in constants/carpark.ts
+
+Update UI styles in index.tsx via the StyleSheet
+
+
